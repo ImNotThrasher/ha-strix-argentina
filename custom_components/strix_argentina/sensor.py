@@ -2,6 +2,8 @@
 
 from datetime import datetime, timezone
 
+from homeassistant.util import dt as dt_util
+
 from homeassistant.components.sensor import (
     SensorDeviceClass,
     SensorEntity,
@@ -79,7 +81,7 @@ class StrixSensor(StrixEntity, SensorEntity):
                 return when
             return max(
                 0,
-                round((datetime.now(timezone.utc) - when).total_seconds() / 60, 1),
+                round((dt_util.utcnow() - when).total_seconds() / 60, 1),
             )
 
         return vehicle_state(self._vehicle).get(self.field)
