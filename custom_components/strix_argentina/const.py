@@ -1,0 +1,2 @@
+DOMAIN = "strix_argentina"
+DEFAULT_SCAN_INTERVAL = 120
