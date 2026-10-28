@@ -9,13 +9,22 @@
           "client_device_id": "Client device ID (optional)",
           "oauth_basic": "OAuth Basic Authorization (value after Basic)"
         }
+      },
+      "reauth_confirm": {
+        "title": "Reauthenticate Strix",
+        "description": "Enter your updated Strix password.",
+        "data": {
+          "password": "New password"
+        }
       }
     },
     "error": {
-      "cannot_connect": "Could not authenticate or retrieve vehicles."
+      "cannot_connect": "Could not authenticate or retrieve vehicles.",
+      "invalid_auth": "Invalid account credentials."
     },
     "abort": {
-      "already_configured": "This account is already configured."
+      "already_configured": "This account is already configured.",
+      "reauth_successful": "Credentials updated successfully."
     }
   }
 }
