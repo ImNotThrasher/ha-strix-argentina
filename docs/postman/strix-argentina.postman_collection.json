@@ -1,0 +1,186 @@
+{
+  "info": {
+    "_postman_id": "146d0523-de09-4664-9671-4af18978f5a1",
+    "name": "Strix Argentina API (read-only)",
+    "description": "Colección no oficial basada en ha-strix-argentina. Antes de compartir o exportar, borrar secretos y tokens de las variables de colección.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "28681801"
+  },
+  "item": [
+    {
+      "name": "01 - Authenticate (password)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));\nif (pm.response.code === 200) {\n  const data = pm.response.json();\n  if (data.access_token) pm.collectionVariables.set('access_token', data.access_token);\n  if (data.refresh_token) pm.collectionVariables.set('refresh_token', data.refresh_token);\n}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Basic {{oauth_basic}}"
+          }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "grant_type",
+              "value": "password"
+            },
+            {
+              "key": "username",
+              "value": "{{username}}"
+            },
+            {
+              "key": "password",
+              "value": "{{password}}"
+            },
+            {
+              "key": "client_device_id",
+              "value": "{{client_device_id}}"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}/oauth/token",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "oauth",
+            "token"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "02 - Refresh token",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "if (pm.response.code === 200) {",
+              "  const data = pm.response.json();",
+              "  if (data.access_token) pm.collectionVariables.set('access_token', data.access_token);",
+              "  if (data.refresh_token) pm.collectionVariables.set('refresh_token', data.refresh_token);",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Basic {{oauth_basic}}"
+          }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "grant_type",
+              "value": "refresh_token"
+            },
+            {
+              "key": "refresh_token",
+              "value": "{{refresh_token}}"
+            },
+            {
+              "key": "client_device_id",
+              "value": "{{client_device_id}}"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}/oauth/token",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "oauth",
+            "token"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "03 - List vehicles",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "if (pm.response.code === 200) pm.test('Array response', () => pm.expect(pm.response.json()).to.be.an('array'));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/things",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "things"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://api.strix.com.ar"
+    },
+    {
+      "key": "username",
+      "value": ""
+    },
+    {
+      "key": "password",
+      "value": ""
+    },
+    {
+      "key": "oauth_basic",
+      "value": ""
+    },
+    {
+      "key": "client_device_id",
+      "value": ""
+    },
+    {
+      "key": "access_token",
+      "value": ""
+    },
+    {
+      "key": "refresh_token",
+      "value": ""
+    }
+  ]
+}
