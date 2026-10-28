@@ -10,13 +10,22 @@
           "client_device_id": "Identificador del dispositivo",
           "oauth_basic": "Credencial OAuth Basic"
         }
+      },
+      "reauth_confirm": {
+        "title": "Volver a autenticar Strix",
+        "description": "Ingresá tu nueva contraseña de Strix.",
+        "data": {
+          "password": "Nueva contraseña"
+        }
       }
     },
     "error": {
-      "cannot_connect": "No se pudo conectar con Strix. Revisá las credenciales y la conexión."
+      "cannot_connect": "No se pudo conectar con Strix. Revisá las credenciales y la conexión.",
+      "invalid_auth": "Credenciales incorrectas."
     },
     "abort": {
-      "already_configured": "Esta cuenta ya está configurada."
+      "already_configured": "Esta cuenta ya está configurada.",
+      "reauth_successful": "Credenciales actualizadas correctamente."
     }
   }
 }
