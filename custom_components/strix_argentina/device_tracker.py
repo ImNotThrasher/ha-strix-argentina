@@ -5,7 +5,7 @@ from .entity import StrixEntity
 from .discovery import register_vehicle_discovery
 
 from .const import DOMAIN
-from .helpers import device_info, gps_coordinates, gps_timestamp_ms, vehicle_info
+from .helpers import device_info, valid_gps_coordinates, gps_timestamp_ms, vehicle_info
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
@@ -36,13 +36,13 @@ class StrixTracker(StrixEntity, TrackerEntity):
 
     @property
     def latitude(self):
-        coordinates = gps_coordinates(self._vehicle)
-        return float(coordinates[0]) if len(coordinates) >= 2 else None
+        coordinates = valid_gps_coordinates(self._vehicle)
+        return coordinates[0] if coordinates else None
 
     @property
     def longitude(self):
-        coordinates = gps_coordinates(self._vehicle)
-        return float(coordinates[1]) if len(coordinates) >= 2 else None
+        coordinates = valid_gps_coordinates(self._vehicle)
+        return coordinates[1] if coordinates else None
 
     @property
     def available(self):
