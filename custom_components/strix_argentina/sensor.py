@@ -2,6 +2,8 @@
 
 from homeassistant.util import dt as dt_util
 
+from datetime import datetime, timezone
+
 from homeassistant.components.sensor import (
     SensorDeviceClass,
     SensorEntity,
