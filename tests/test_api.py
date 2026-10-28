@@ -114,6 +114,34 @@ class ApiTests(unittest.IsolatedAsyncioTestCase):
         await asyncio.gather(obj.authenticate(), obj.authenticate())
         self.assertEqual(len(session.posts), 1)
 
+    async def test_two_vehicles_returned_independently(self):
+        session = Session(
+            [Response(200, {"access_token": "ok"})],
+            [Response(200, [
+                {"id": "vehicle-a", "type": "mrn:things:vehicle", "state": {"speed": 0}},
+                {"id": "vehicle-b", "type": "mrn:things:vehicle", "state": {"speed": 30}},
+            ])],
+        )
+        vehicles = await client(session).vehicles()
+        self.assertEqual(set(vehicles), {"vehicle-a", "vehicle-b"})
+        self.assertEqual(vehicles["vehicle-b"]["state"]["speed"], 30)
+
+    async def test_server_error(self):
+        session = Session(
+            [Response(200, {"access_token": "ok"})], [Response(503, {})]
+        )
+        with self.assertRaises(api.StrixApiError):
+            await client(session).vehicles()
+
+    async def test_repeated_unauthorized_get(self):
+        session = Session(
+            [Response(200, {"access_token": "first"}),
+             Response(200, {"access_token": "second"})],
+            [Response(401, {}), Response(401, {})],
+        )
+        with self.assertRaises(api.StrixAuthenticationError):
+            await client(session).vehicles()
+
     async def test_network_failure(self):
         import aiohttp
         session = Session([Response(200, {"access_token": "ok"})], [])
