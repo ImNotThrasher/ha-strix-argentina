@@ -81,7 +81,7 @@ class StrixClient:
                 except (ValueError, TypeError, KeyError) as exc:
                     raise StrixApiError("Invalid Strix authentication response") from exc
 
-                if not isinstance(data, dict) or not isinstance(data.get("access_token"), str) or not data["access_token"] :
+                if not isinstance(data, dict) or not isinstance(data.get("access_token"), str) or not data["access_token"]:
                     raise StrixApiError("Missing Strix access token")
                 self.token = data["access_token"]
                 self.refresh_token = data.get("refresh_token", self.refresh_token)
