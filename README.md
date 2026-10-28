@@ -3,6 +3,8 @@
 [![Latest release](https://img.shields.io/github/v/release/ImNotThrasher/ha-strix-argentina?label=release)](https://github.com/ImNotThrasher/ha-strix-argentina/releases/latest)
 [![Validation](https://github.com/ImNotThrasher/ha-strix-argentina/actions/workflows/validate.yml/badge.svg?branch=main)](https://github.com/ImNotThrasher/ha-strix-argentina/actions/workflows/validate.yml)
 [![GitHub stars](https://img.shields.io/github/stars/ImNotThrasher/ha-strix-argentina?style=flat)](https://github.com/ImNotThrasher/ha-strix-argentina/stargazers)
+[![GitHub issues](https://img.shields.io/github/issues/ImNotThrasher/ha-strix-argentina)](https://github.com/ImNotThrasher/ha-strix-argentina/issues)
+[![GitHub downloads](https://img.shields.io/github/downloads/ImNotThrasher/ha-strix-argentina/total)](https://github.com/ImNotThrasher/ha-strix-argentina/releases)
 [![License: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-blue)](LICENSE)
 
 [![Open repository in HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=ImNotThrasher&repository=ha-strix-argentina&category=integration)
