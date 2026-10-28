@@ -1,7 +1,5 @@
 """Numeric and timestamp sensors for Strix vehicles."""
 
-from datetime import datetime, timezone
-
 from homeassistant.util import dt as dt_util
 
 from homeassistant.components.sensor import (
