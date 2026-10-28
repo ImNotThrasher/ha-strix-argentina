@@ -19,6 +19,7 @@ Unofficial Home Assistant integration for Strix Argentina vehicle GPS tracking (
 
 - [Strix and LoJack](#strix-and-lojack)
 - [Features](#features)
+- [Screenshots](#screenshots)
 - [Requirements](#requirements)
 - [Installation](#installation)
   - [Manual installation](#manual-installation)
@@ -51,6 +52,21 @@ The integration uses the **Strix Argentina** name because it connects to the Str
 
 **Limitations:** Strix GPS data may be delayed or unavailable. The meaning of the reported GPS distance has not been independently verified. This integration is not an emergency, safety or guaranteed real-time tracking system.
 
+## Screenshots
+
+The screenshots below show a real Home Assistant dashboard and the entities exposed by the Strix Argentina integration. Displayed values are examples from one vehicle; available entities and values depend on the Strix account and vehicle.
+
+<table>
+  <tr>
+    <td align="center" width="50%"><strong>Vehicle dashboard</strong></td>
+    <td align="center" width="50%"><strong>Vehicle sensors</strong></td>
+  </tr>
+  <tr>
+    <td valign="top"><img src="docs/images/vehicle-dashboard.png" alt="Home Assistant Strix Argentina vehicle dashboard with map, speed, ignition, movement, heading and mileage" width="100%"></td>
+    <td valign="top"><img src="docs/images/vehicle-sensors.png" alt="Home Assistant Strix Argentina sensor entities including mileage, GPS update, API connectivity and vehicle status" width="100%"></td>
+  </tr>
+</table>
+
 ## Requirements
 
 - Home Assistant with custom integration support
@@ -72,7 +88,7 @@ The integration uses the **Strix Argentina** name because it connects to the Str
 
 [![Add integration to Home Assistant](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=strix_argentina)
 
-**Note:** The repository is not currently listed in the default HACS catalog. A custom repository is sufficient; listing in the default catalog is a separate review process. While this repository remains private, these links are not usable for public installation.
+**Note:** The repository is not currently listed in the default HACS catalog. A custom repository is sufficient; listing in the default catalog is a separate review process. 
 
 ### Alternative: manual installation
 
