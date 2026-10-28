@@ -23,7 +23,6 @@ FIELDS = {
     "last_gps_update": ("Last GPS update", None),
     "gps_age": ("GPS data age", "min"),
     "api_last_success": ("Last successful API poll", None),
-    "gps_stale": ("GPS data stale", None),
 }
 
 
@@ -55,7 +54,7 @@ class StrixSensor(StrixEntity, SensorEntity):
                 else None
             )
 
-        if field in ("mileage_correction", "gps_age", "gps_stale"):
+        if field in ("mileage_correction", "gps_age"):
             self._attr_entity_registry_enabled_default = False
 
     @property
@@ -70,11 +69,6 @@ class StrixSensor(StrixEntity, SensorEntity):
     def native_value(self):
         if self.field == "api_last_success":
             return self.coordinator.last_strix_success()
-        if self.field == "gps_stale":
-            timestamp = gps_timestamp_ms(self._vehicle)
-            if not isinstance(timestamp, (int, float)) or timestamp <= 0:
-                return None
-            return (datetime.now(timezone.utc).timestamp() * 1000 - timestamp) > 900000
         if self.field in ("last_gps_update", "gps_age"):
             timestamp = gps_timestamp_ms(self._vehicle)
             if not isinstance(timestamp, (int, float)) or timestamp <= 0:
