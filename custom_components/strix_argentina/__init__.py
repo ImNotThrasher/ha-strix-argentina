@@ -8,6 +8,8 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, Upda
 
 from .api import StrixClient
 from .const import DEFAULT_SCAN_INTERVAL, DOMAIN
+from .discovery import notify_new_vehicles
+from .api import StrixAuthenticationError, StrixConnectionError, StrixApiError
 
 _LOGGER = logging.getLogger(__name__)
 PLATFORMS = ["device_tracker", "sensor", "binary_sensor"]
@@ -23,14 +25,29 @@ async def async_setup_entry(hass, entry):
         entry.data["oauth_basic"],
     )
 
+    coordinator_ref = None
+
     async def update():
         """Retrieve vehicle data without exposing sensitive error details."""
         try:
-            return await client.vehicles()
+            vehicles = await client.vehicles()
+            if coordinator_ref is not None and set(vehicles) - set(coordinator_ref.data or {}):
+                hass.async_create_task(_notify_discovery())
+            return vehicles
+        except StrixAuthenticationError as exc:
+            from homeassistant.exceptions import ConfigEntryAuthFailed
+            raise ConfigEntryAuthFailed("Strix authentication rejected") from exc
+        except (StrixConnectionError, StrixApiError) as exc:
+            raise UpdateFailed(type(exc).__name__) from exc
         except Exception as exc:
             raise UpdateFailed(
                 "Strix update failed: " + type(exc).__name__
             ) from exc
+
+    async def _notify_discovery():
+        # Schedule after the coordinator has stored its refreshed data.
+        await __import__("asyncio").sleep(0)
+        notify_new_vehicles(hass, entry.entry_id)
 
     coordinator = DataUpdateCoordinator(
         hass,
@@ -40,6 +57,7 @@ async def async_setup_entry(hass, entry):
         update_interval=timedelta(seconds=DEFAULT_SCAN_INTERVAL),
     )
     await coordinator.async_config_entry_first_refresh()
+    coordinator_ref = coordinator
     hass.data.setdefault(DOMAIN, {})[entry.entry_id] = coordinator
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     return True
