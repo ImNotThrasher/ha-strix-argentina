@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "146d0523-de09-4664-9671-4af18978f5a1",
     "name": "Strix Argentina API (read-only)",
-    "description": "Colección no oficial basada en ha-strix-argentina. Antes de compartir o exportar, borrar secretos y tokens de las variables de colección.",
+    "description": "Unofficial, read-only Strix Argentina API collection for developers. Authenticate using OAuth, refresh tokens, and list vehicles. Set collection variables locally before use. oauth_basic is the OAuth client credential without the 'Basic ' prefix; it is not your account password. client_device_id is optional and is disabled in requests by default. Never commit real credentials, tokens, device IDs, or vehicle responses. API endpoints may change without notice.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "28681801"
   },
@@ -15,7 +15,19 @@
           "script": {
             "type": "text/javascript",
             "exec": [
-              "pm.test('HTTP 200', () => pm.response.to.have.status(200));\nif (pm.response.code === 200) {\n  const data = pm.response.json();\n  if (data.access_token) pm.collectionVariables.set('access_token', data.access_token);\n  if (data.refresh_token) pm.collectionVariables.set('refresh_token', data.refresh_token);\n}"
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "if (pm.response.code === 200) {",
+              "  const data = pm.response.json();",
+              "  pm.test('Access token is present', () => {",
+              "    pm.expect(data.access_token).to.be.a('string').and.not.empty;",
+              "  });",
+              "  if (typeof data.access_token === 'string' && data.access_token) {",
+              "    pm.collectionVariables.set('access_token', data.access_token);",
+              "  }",
+              "  if (typeof data.refresh_token === 'string' && data.refresh_token) {",
+              "    pm.collectionVariables.set('refresh_token', data.refresh_token);",
+              "  }",
+              "}"
             ]
           }
         }
@@ -45,7 +57,9 @@
             },
             {
               "key": "client_device_id",
-              "value": "{{client_device_id}}"
+              "value": "{{client_device_id}}",
+              "disabled": true,
+              "description": "Optional device identifier. Enable this field only if your Strix client requires it."
             }
           ]
         },
@@ -58,7 +72,8 @@
             "oauth",
             "token"
           ]
-        }
+        },
+        "description": "Get an OAuth access token using your Strix account credentials. Requires username, password, and oauth_basic. oauth_basic must contain only the encoded client credential, without the 'Basic ' prefix. client_device_id is optional and disabled by default. On success, saves access_token and refresh_token as collection variables."
       },
       "response": []
     },
@@ -73,8 +88,15 @@
               "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
               "if (pm.response.code === 200) {",
               "  const data = pm.response.json();",
-              "  if (data.access_token) pm.collectionVariables.set('access_token', data.access_token);",
-              "  if (data.refresh_token) pm.collectionVariables.set('refresh_token', data.refresh_token);",
+              "  pm.test('Access token is present', () => {",
+              "    pm.expect(data.access_token).to.be.a('string').and.not.empty;",
+              "  });",
+              "  if (typeof data.access_token === 'string' && data.access_token) {",
+              "    pm.collectionVariables.set('access_token', data.access_token);",
+              "  }",
+              "  if (typeof data.refresh_token === 'string' && data.refresh_token) {",
+              "    pm.collectionVariables.set('refresh_token', data.refresh_token);",
+              "  }",
               "}"
             ]
           }
@@ -101,7 +123,9 @@
             },
             {
               "key": "client_device_id",
-              "value": "{{client_device_id}}"
+              "value": "{{client_device_id}}",
+              "disabled": true,
+              "description": "Optional device identifier. Enable this field only if your Strix client requires it."
             }
           ]
         },
@@ -114,7 +138,8 @@
             "oauth",
             "token"
           ]
-        }
+        },
+        "description": "Renew an access token using the refresh_token saved by the login request. Requires oauth_basic and refresh_token. client_device_id is optional and disabled by default. On success, updates collection token variables."
       },
       "response": []
     },
@@ -127,7 +152,11 @@
             "type": "text/javascript",
             "exec": [
               "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
-              "if (pm.response.code === 200) pm.test('Array response', () => pm.expect(pm.response.json()).to.be.an('array'));"
+              "if (pm.response.code === 200) {",
+              "  pm.test('Response is an array', () => {",
+              "    pm.expect(pm.response.json()).to.be.an('array');",
+              "  });",
+              "}"
             ]
           }
         }
@@ -148,7 +177,8 @@
           "path": [
             "things"
           ]
-        }
+        },
+        "description": "Read the list of vehicles and their available status data. Requires access_token from login or refresh. Responses may include private vehicle identifiers and locations; do not save or publish real responses."
       },
       "response": []
     }
@@ -156,31 +186,43 @@
   "variable": [
     {
       "key": "base_url",
-      "value": "https://api.strix.com.ar"
+      "value": "https://api.strix.com.ar",
+      "description": "Strix API base URL."
     },
     {
       "key": "username",
-      "value": ""
+      "value": "",
+      "description": "Your Strix account username. Keep private.",
+      "type": "secret"
     },
     {
       "key": "password",
-      "value": ""
+      "value": "",
+      "description": "Your Strix account password. Keep private.",
+      "type": "secret"
     },
     {
       "key": "oauth_basic",
-      "value": ""
+      "value": "",
+      "description": "OAuth client credential (encoded portion only, without 'Basic '). Not your account password.",
+      "type": "secret"
     },
     {
       "key": "client_device_id",
-      "value": ""
+      "value": "",
+      "description": "Optional device identifier; leave blank unless needed and enable the request body field to send it."
     },
     {
       "key": "access_token",
-      "value": ""
+      "value": "",
+      "description": "Automatically populated by successful OAuth requests. Keep private.",
+      "type": "secret"
     },
     {
       "key": "refresh_token",
-      "value": ""
+      "value": "",
+      "description": "Automatically populated by successful OAuth requests. Keep private.",
+      "type": "secret"
     }
   ]
 }
