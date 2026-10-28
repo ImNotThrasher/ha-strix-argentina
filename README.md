@@ -86,6 +86,16 @@ The integration does not currently provide an automated way to obtain the OAuth 
 
 **Never publish credentials, tokens, authorization headers, Home Assistant backups or the `.storage` directory.**
 
+### How to find the OAuth Basic value
+
+1. Sign in at [Strix customer portal](https://clientes.strix.com.ar/login) with your own account.
+2. Open your browser's developer tools (F12) and select the Network tab.
+3. Look for the authentication request to the Strix API.
+4. In its request headers, find the Basic authorization value.
+5. Enter the client value in the integration's OAuth Basic Authorization field, without the prefix.
+
+Keep this value private. Never publish authorization headers, passwords, tokens, or browser network exports.
+
 ## Upgrading an existing manual installation
 
 The integration intentionally preserves the domain `strix_argentina` and existing entity unique IDs. This helps retain entity registry entries, dashboards, automations and history.
