@@ -18,16 +18,17 @@ jobs:
       - uses: actions/checkout@v4
       - name: Verify version and existing release
         env:
-          VERSION: 0.2.1
           GH_TOKEN: ${{ github.token }}
         run: |
           python - <<'PY'
           import json, os, re
-          version = os.environ["VERSION"]
+          version = json.load(open("custom_components/strix_argentina/manifest.json"))["version"]
+          with open(os.environ["GITHUB_ENV"], "a") as env:
+              env.write(f"VERSION={version}\\n")
           assert re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+", version), "Expected semantic version x.y.z"
           with open("custom_components/strix_argentina/manifest.json") as f:
               manifest = json.load(f)
-          assert manifest["version"] == version, "Manifest version must match requested release"
+          assert manifest["version"] == version
           PY
           if gh release view "v${VERSION}" >/dev/null 2>&1; then
             echo "Release already exists; refusing to overwrite"
