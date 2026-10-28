@@ -1,13 +1,13 @@
 {
   "domain": "strix_argentina",
   "name": "Strix Argentina",
-  "version": "0.1.0",
-  "requirements": [],
   "codeowners": [
     "@ImNotThrasher"
   ],
   "config_flow": true,
-  "iot_class": "cloud_polling",
   "documentation": "https://github.com/ImNotThrasher/ha-strix-argentina#readme",
-  "issue_tracker": "https://github.com/ImNotThrasher/ha-strix-argentina/issues"
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/ImNotThrasher/ha-strix-argentina/issues",
+  "requirements": [],
+  "version": "0.1.0"
 }
