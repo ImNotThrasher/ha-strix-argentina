@@ -96,6 +96,24 @@ class ApiTests(unittest.IsolatedAsyncioTestCase):
         with self.assertRaises(api.StrixApiError):
             await client(session).vehicles()
 
+    async def test_malformed_vehicle_item(self):
+        session = Session([Response(200, {"access_token": "ok"})],
+                          [Response(200, [{"id": "v1", "type": "mrn:things:vehicle"}, None])])
+        with self.assertRaises(api.StrixApiError):
+            await client(session).vehicles()
+
+    async def test_non_string_token(self):
+        session = Session([Response(200, {"access_token": 123})], [])
+        with self.assertRaises(api.StrixApiError):
+            await client(session).authenticate()
+
+    async def test_concurrent_auth_uses_single_request(self):
+        import asyncio
+        session = Session([Response(200, {"access_token": "ok"})], [])
+        obj = client(session)
+        await asyncio.gather(obj.authenticate(), obj.authenticate())
+        self.assertEqual(len(session.posts), 1)
+
     async def test_network_failure(self):
         import aiohttp
         session = Session([Response(200, {"access_token": "ok"})], [])
