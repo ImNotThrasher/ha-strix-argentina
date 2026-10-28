@@ -1,0 +1,46 @@
+name: Publish release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version (must match manifest.json, e.g. 0.2.1)"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify version and existing release
+        env:
+          VERSION: ${{ inputs.version }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import json, os, re
+          version = os.environ["VERSION"]
+          assert re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+", version), "Expected semantic version x.y.z"
+          with open("custom_components/strix_argentina/manifest.json") as f:
+              manifest = json.load(f)
+          assert manifest["version"] == version, "Manifest version must match requested release"
+          PY
+          if gh release view "v${VERSION}" >/dev/null 2>&1; then
+            echo "Release already exists; refusing to overwrite"
+            exit 1
+          fi
+      - name: Publish new version from main
+        env:
+          VERSION: ${{ inputs.version }}
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          gh release create "v${VERSION}" \
+            --target "${GITHUB_SHA}" \
+            --title "v${VERSION}" \
+            --notes-file CHANGELOG.md
