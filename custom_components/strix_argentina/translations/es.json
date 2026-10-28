@@ -1,0 +1,22 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Strix Argentina",
+        "description": "Ingresá tus credenciales de Strix.",
+        "data": {
+          "username": "Usuario",
+          "password": "Contraseña",
+          "client_device_id": "Identificador del dispositivo",
+          "oauth_basic": "Credencial OAuth Basic"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "No se pudo conectar con Strix. Revisá las credenciales y la conexión."
+    },
+    "abort": {
+      "already_configured": "Esta cuenta ya está configurada."
+    }
+  }
+}
