@@ -48,6 +48,15 @@ class VehicleHelpersTests(unittest.TestCase):
         self.assertEqual(helpers.gps_coordinates(vehicle), [-34.8, -58.4])
         self.assertEqual(helpers.gps_timestamp_ms(vehicle), 1234567890000)
 
+    def test_invalid_coordinates(self):
+        for coordinates in ([], [91, 0], [0, 181], ["nan", 2], ["bad", 2]):
+            self.assertIsNone(helpers.valid_gps_coordinates(
+                {"state": {"location": {"coordinates": coordinates}}}
+            ))
+        self.assertEqual(helpers.valid_gps_coordinates(
+            {"state": {"location": {"coordinates": [-34.8, -58.4]}}}
+        ), (-34.8, -58.4))
+
     def test_device_info_keeps_identifiers(self):
         vehicle = {"info": {"label": "My car", "make": "Chevrolet"}}
         self.assertEqual(
