@@ -7,7 +7,8 @@ from homeassistant.components.sensor import (
     SensorEntity,
     SensorStateClass,
 )
-from homeassistant.helpers.update_coordinator import CoordinatorEntity
+from .entity import StrixEntity
+from .discovery import register_vehicle_discovery
 
 from .const import DOMAIN
 from .helpers import device_info, gps_timestamp_ms, vehicle_state
@@ -27,23 +28,17 @@ FIELDS = {
 async def async_setup_entry(hass, entry, async_add_entities):
     """Create sensors for vehicles present during initial setup."""
     coordinator = hass.data[DOMAIN][entry.entry_id]
-    async_add_entities(
-        [
-            StrixSensor(coordinator, vid, field)
-            for vid in coordinator.data
-            for field in FIELDS
-        ]
-    )
+    register_vehicle_discovery(hass, entry, coordinator, async_add_entities,
+        lambda vid: [StrixSensor(coordinator, vid, field) for field in FIELDS])
 
 
-class StrixSensor(CoordinatorEntity, SensorEntity):
+class StrixSensor(StrixEntity, SensorEntity):
     """Expose one field from a Strix vehicle's latest state."""
 
     _attr_has_entity_name = True
 
     def __init__(self, coordinator, vid, field):
-        super().__init__(coordinator)
-        self.vid = vid
+        super().__init__(coordinator, vid)
         self.field = field
         self._attr_unique_id = vid + "_" + field
         self._attr_name, self._attr_native_unit_of_measurement = FIELDS[field]
@@ -63,7 +58,7 @@ class StrixSensor(CoordinatorEntity, SensorEntity):
 
     @property
     def _vehicle(self):
-        return self.coordinator.data.get(self.vid) or {}
+        return self.vehicle
 
     @property
     def device_info(self):
