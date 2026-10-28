@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.1 — HACS packaging and documentation
+
+- Place integration icon assets under `custom_components/strix_argentina/brand/` so HACS brand validation succeeds.
+- Improve README with HACS installation buttons, latest-release links and dynamic GitHub badges.
+- Validate HACS, Hassfest, unit tests, lint and isolated Home Assistant multi-vehicle runtime tests in CI.
+- No changes to Strix API requests, authentication, entity IDs or vehicle-control behavior.
+
+
 ## 0.2.0 — Release candidate
 
 - Dynamic discovery of additional Strix vehicles without restarting Home Assistant.
