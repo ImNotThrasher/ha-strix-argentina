@@ -4,6 +4,8 @@ Keep the payload parsing here so entities use the same defaults. These helpers
 must not change entity unique IDs or the existing coordinate interpretation.
 """
 
+import math
+
 from .const import DOMAIN
 
 
@@ -31,7 +33,14 @@ def gps_timestamp_ms(vehicle):
     """Return the GPS timestamp in milliseconds, if present."""
     metadata = (vehicle or {}).get("metadata") or {}
     state = metadata.get("state") or {}
-    return (state.get("location") or {}).get("timestamp")
+    value = (state.get("location") or {}).get("timestamp")
+    if isinstance(value, bool):
+        return None
+    try:
+        value = float(value)
+    except (TypeError, ValueError, OverflowError):
+        return None
+    return value if math.isfinite(value) and 0 < value < 253402300800000 else None
 
 
 def device_info(vehicle, vehicle_id, *, detailed=False):
@@ -52,8 +61,6 @@ def device_info(vehicle, vehicle_id, *, detailed=False):
 
 def valid_gps_coordinates(vehicle):
     """Validate latitude and longitude while preserving existing ordering."""
-    import math
-
     coordinates = gps_coordinates(vehicle)
     if not isinstance(coordinates, (list, tuple)) or len(coordinates) < 2:
         return None
