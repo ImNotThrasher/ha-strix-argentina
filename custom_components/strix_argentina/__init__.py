@@ -1,6 +1,6 @@
 """Set up Strix Argentina and share its vehicle update coordinator."""
 
-from datetime import timedelta
+from datetime import datetime, timedelta, timezone
 import logging
 
 from homeassistant.exceptions import ConfigEntryAuthFailed
@@ -29,10 +29,15 @@ async def async_setup_entry(hass, entry):
         entry.data["oauth_basic"],
     )
 
+    last_successful_poll = None
+
     async def update():
         """Fetch vehicles, reporting authentication failures separately."""
         try:
-            return await client.vehicles()
+            nonlocal last_successful_poll
+            vehicles = await client.vehicles()
+            last_successful_poll = datetime.now(timezone.utc)
+            return vehicles
         except StrixAuthenticationError as exc:
             raise ConfigEntryAuthFailed("Strix authentication rejected") from exc
         except (StrixConnectionError, StrixApiError) as exc:
@@ -49,6 +54,7 @@ async def async_setup_entry(hass, entry):
         update_method=update,
         update_interval=timedelta(seconds=DEFAULT_SCAN_INTERVAL),
     )
+    coordinator.last_strix_success = lambda: last_successful_poll
     await coordinator.async_config_entry_first_refresh()
     hass.data.setdefault(DOMAIN, {})[entry.entry_id] = coordinator
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
