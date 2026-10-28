@@ -1,11 +1,13 @@
 """Binary status sensors for Strix vehicles."""
 
+from datetime import datetime, timezone
+
 from homeassistant.components.binary_sensor import BinarySensorEntity
 from .entity import StrixEntity
 from .discovery import register_vehicle_discovery
 
 from .const import DOMAIN
-from .helpers import device_info, vehicle_state
+from .helpers import device_info, vehicle_state, gps_timestamp_ms
 
 # Field names are part of existing unique IDs; do not rename them.
 FIELDS = {
@@ -13,6 +15,8 @@ FIELDS = {
     "in_motion": "In motion",
     "towing": "Towing detected",
     "fuel_cut_off": "Fuel cut off",
+    "gps_stale": "GPS data stale",
+    "api_connected": "Strix API connected",
 }
 
 
@@ -33,6 +37,8 @@ class StrixBinary(StrixEntity, BinarySensorEntity):
         self.field = field
         self._attr_unique_id = vid + "_" + field
         self._attr_name = FIELDS[field]
+        if field == "gps_stale":
+            self._attr_entity_registry_enabled_default = False
 
     @property
     def device_info(self):
@@ -40,6 +46,18 @@ class StrixBinary(StrixEntity, BinarySensorEntity):
         return device_info(vehicle, self.vid)
 
     @property
+    def available(self):
+        if self.field == "api_connected":
+            return self.vid in (self.coordinator.data or {})
+        return super().available
+
+    @property
     def is_on(self):
-        vehicle = self.coordinator.data.get(self.vid) or {}
-        return vehicle_state(vehicle).get(self.field)
+        if self.field == "api_connected":
+            return self.coordinator.last_update_success
+        if self.field == "gps_stale":
+            timestamp = gps_timestamp_ms(self.vehicle)
+            if not isinstance(timestamp, (int, float)) or timestamp <= 0:
+                return None
+            return datetime.now(timezone.utc).timestamp() - timestamp / 1000 > 900
+        return vehicle_state(self.vehicle).get(self.field)
