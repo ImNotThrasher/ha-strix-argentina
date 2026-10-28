@@ -36,8 +36,8 @@ The integration uses the **Strix Argentina** name because it connects to the Str
 - Automatic discovery of newly added vehicles during polling (no restart required)
 - Safe integration diagnostics and English/Spanish configuration translations
 - Password reauthentication from Home Assistant without removing the account
-- GPS coordinate validation and optional GPS staleness indicator
-- Last successful Strix API poll sensor
+- GPS coordinate validation and optional binary GPS staleness indicator (15-minute threshold)
+- Last successful Strix API poll sensor and API connection status binary sensor
 
 **Limitations:** Strix GPS data may be delayed or unavailable. The meaning of the reported GPS distance has not been independently verified. This integration is not an emergency, safety or guaranteed real-time tracking system.
 
@@ -110,7 +110,7 @@ Transient API outages are reported as update failures. Rejected account credenti
 
 ## Development and validation
 
-This integration is currently at version `0.1.0`. The API is unofficial. Bug reports and contributions are welcome. Hassfest runs on every push and pull request; the HACS validation job runs only when the repository is public. The Python unit suite covers payload helpers, GPS coordinate validation, OAuth refresh and error handling, and dynamic vehicle discovery. Ruff lint and Python compilation also run in CI. Run locally with `python -m pip install aiohttp` and `python -m unittest discover -s tests`. These checks validate packaging and selected behavior; they do not guarantee that the external Strix API will remain compatible.
+This integration is currently at version `0.1.0` (pre-release). The API is unofficial. Bug reports and contributions are welcome. Hassfest runs on every push and pull request; the HACS validation job runs only when the repository is public. The Python unit suite covers payload helpers, GPS coordinate validation, OAuth refresh and error handling, and dynamic vehicle discovery. Ruff lint and Python compilation also run in CI. Run locally with `python -m pip install aiohttp` and `python -m unittest discover -s tests`. These checks validate packaging and selected behavior; they do not guarantee that the external Strix API will remain compatible.
 
 ## License and trademarks
 
