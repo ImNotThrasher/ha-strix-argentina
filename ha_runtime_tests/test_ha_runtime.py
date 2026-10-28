@@ -22,11 +22,11 @@ async def test_two_vehicles_create_independent_entities(hass):
             "state": {"speed": 45, "location": {"coordinates": [-35.0, -58.6]}},
         },
     }
-    coordinator = DataUpdateCoordinator(hass, Mock(), name="Strix test")
-    coordinator.async_set_updated_data(vehicles)
-    coordinator.last_strix_success = lambda: None
     entry = Mock()
     entry.entry_id = "isolated-test-entry"
+    coordinator = DataUpdateCoordinator(hass, Mock(), name="Strix test", config_entry=entry)
+    coordinator.async_set_updated_data(vehicles)
+    coordinator.last_strix_success = lambda: None
     callbacks = []
     entry.async_on_unload.side_effect = callbacks.append
     hass.data.setdefault("strix_argentina", {})[entry.entry_id] = coordinator
