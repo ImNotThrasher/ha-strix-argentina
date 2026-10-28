@@ -110,7 +110,7 @@ Transient API outages are reported as update failures. Rejected account credenti
 
 ## Development and validation
 
-This integration is currently at version `0.1.0` (pre-release). The API is unofficial. Bug reports and contributions are welcome. Hassfest runs on every push and pull request; the HACS validation job runs only when the repository is public. The Python unit suite covers payload helpers, GPS coordinate validation, OAuth refresh and error handling, and dynamic vehicle discovery. Ruff lint and Python compilation also run in CI. Run locally with `python -m pip install aiohttp` and `python -m unittest discover -s tests`. These checks validate packaging and selected behavior; they do not guarantee that the external Strix API will remain compatible.
+This integration is currently at version `0.2.0` (release candidate; validate against your Home Assistant instance before publishing a GitHub release). The API is unofficial. Bug reports and contributions are welcome. Hassfest runs on every push and pull request; the HACS validation job runs only when the repository is public. The Python unit suite covers payload helpers, GPS coordinate validation, OAuth refresh and error handling, and dynamic vehicle discovery. Ruff lint and Python compilation also run in CI. Run locally with `python -m pip install aiohttp` and `python -m unittest discover -s tests`. These checks validate packaging and selected behavior; they do not guarantee that the external Strix API will remain compatible.
 
 ## License and trademarks
 
