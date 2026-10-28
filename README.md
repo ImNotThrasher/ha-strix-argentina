@@ -1,12 +1,13 @@
 # Strix Argentina for Home Assistant
 
-Unofficial custom integration for monitoring Strix Argentina GPS-tracked vehicles in Home Assistant.
+Unofficial Home Assistant integration for Strix Argentina vehicle GPS tracking (the service formerly known as LoJack Argentina).
 
 > [!IMPORTANT]
-> This is an independent community project. It is **not affiliated with, endorsed by, or supported by Strix Argentina**. Strix and its associated names and logos are trademarks of their respective owners. References to those marks are for identification only; no trademark rights or official affiliation are claimed.
+> This is an independent community project. It is **not affiliated with, endorsed by, or supported by Strix Argentina, LoJack, or their respective owners**. Strix, LoJack and their associated names and logos are trademarks of their respective owners. References to those marks are for identification only; no trademark rights or official affiliation are claimed.
 
 ## Table of contents
 
+- [Strix and LoJack](#strix-and-lojack)
 - [Features](#features)
 - [Requirements](#requirements)
 - [Installation](#installation)
@@ -18,6 +19,12 @@ Unofficial custom integration for monitoring Strix Argentina GPS-tracked vehicle
 - [Diagnostics and troubleshooting](#diagnostics-and-troubleshooting)
 - [Development and validation](#development-and-validation)
 - [License and trademarks](#license-and-trademarks)
+
+## Strix and LoJack
+
+**Strix Argentina is associated with the vehicle tracking service previously known as LoJack Argentina.** The service has also used branding such as *Strix by LoJack*. This historical reference is included to help users of the former LoJack Argentina service discover the integration; it does **not** imply that this project is an official LoJack or Strix product.
+
+The integration uses the **Strix Argentina** name because it connects to the Strix platform and API. The Home Assistant integration name and GitHub repository name remain unchanged for compatibility and clarity.
 
 ## Features
 
@@ -107,4 +114,4 @@ This integration is currently at version `0.1.0`. The API is unofficial. Bug rep
 
 ## License and trademarks
 
-The source code is licensed under the **GNU General Public License v3.0 (GPL-3.0)**. See [LICENSE](LICENSE). The Strix name and logo belong to their respective owners; the project's trademark disclaimer does not constitute a license to use third-party assets.
+The source code is licensed under the **GNU General Public License v3.0 (GPL-3.0)**. See [LICENSE](LICENSE). The Strix and LoJack names and logos belong to their respective owners; the project's trademark disclaimer does not constitute a license to use third-party assets.
