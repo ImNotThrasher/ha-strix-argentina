@@ -1,1 +1,21 @@
-{"config":{"step":{"user":{"title":"Connect Strix Argentina","data":{"username":"Username","password":"Password","client_device_id":"Client device ID (opcional; dejar vacío por defecto)","oauth_basic":"OAuth Basic Authorization (value after Basic)"}}},"error":{"cannot_connect":"Could not authenticate or retrieve vehicles."}}}
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect Strix Argentina",
+        "data": {
+          "username": "Username",
+          "password": "Password",
+          "client_device_id": "Client device ID (optional)",
+          "oauth_basic": "OAuth Basic Authorization (value after Basic)"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Could not authenticate or retrieve vehicles."
+    },
+    "abort": {
+      "already_configured": "This account is already configured."
+    }
+  }
+}
