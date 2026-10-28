@@ -1,4 +1,4 @@
-"""Minimal asynchronous client for the unofficial Strix Argentina API."""
+"""Asynchronous Strix API client with classified, secret-safe failures."""
 
 import asyncio
 import time
@@ -7,6 +7,18 @@ import aiohttp
 
 BASE = "https://api.strix.com.ar"
 REQUEST_TIMEOUT = aiohttp.ClientTimeout(total=20)
+
+
+class StrixApiError(Exception):
+    """Strix returned an invalid response or HTTP error."""
+
+
+class StrixAuthenticationError(StrixApiError):
+    """Strix rejected credentials or authorization."""
+
+
+class StrixConnectionError(StrixApiError):
+    """Network or timeout failure contacting Strix."""
 
 
 class StrixClient:
@@ -24,7 +36,7 @@ class StrixClient:
         self.lock = asyncio.Lock()
 
     def _auth_payload(self):
-        """Prefer refresh credentials; fall back to account credentials."""
+        """Prefer refresh credentials, falling back to account credentials."""
         if self.refresh_token:
             return {
                 "grant_type": "refresh_token",
@@ -39,63 +51,78 @@ class StrixClient:
         }
 
     async def authenticate(self):
-        """Refresh the access token, retrying with a password if needed."""
+        """Refresh access token; retry with password if refresh is rejected."""
         async with self.lock:
             if self.token and time.monotonic() < self.expires_at:
                 return
 
             payload = self._auth_payload()
             for attempt in range(2):
-                async with self.session.post(
-                    BASE + "/oauth/token",
-                    data=payload,
-                    headers={"Authorization": "Basic " + self.oauth_basic},
-                    timeout=REQUEST_TIMEOUT,
-                ) as response:
-                    if response.status >= 400:
-                        if attempt == 0 and self.refresh_token:
-                            self.refresh_token = None
-                            payload = self._auth_payload()
-                            continue
-                        raise RuntimeError(
-                            "Strix authentication failed (HTTP %s)" % response.status
-                        )
+                try:
+                    async with self.session.post(
+                        BASE + "/oauth/token",
+                        data=payload,
+                        headers={"Authorization": "Basic " + self.oauth_basic},
+                        timeout=REQUEST_TIMEOUT,
+                    ) as response:
+                        if response.status >= 400:
+                            if attempt == 0 and self.refresh_token:
+                                self.refresh_token = None
+                                payload = self._auth_payload()
+                                continue
+                            if response.status in (400, 401, 403):
+                                raise StrixAuthenticationError(
+                                    "Strix authentication rejected (HTTP %s)" % response.status
+                                )
+                            raise StrixApiError("Strix auth HTTP %s" % response.status)
+                        data = await response.json(content_type=None)
+                except (aiohttp.ClientError, TimeoutError) as exc:
+                    raise StrixConnectionError("Strix authentication unavailable") from exc
+                except (ValueError, TypeError, KeyError) as exc:
+                    raise StrixApiError("Invalid Strix authentication response") from exc
 
-                    data = await response.json(content_type=None)
-                    self.token = data["access_token"]
-                    self.refresh_token = data.get(
-                        "refresh_token", self.refresh_token
-                    )
-                    self.expires_at = time.monotonic() + max(
-                        30, int(data.get("expires_in", 900)) - 60
-                    )
-                    return
+                if not isinstance(data, dict) or not data.get("access_token"):
+                    raise StrixApiError("Missing Strix access token")
+                self.token = data["access_token"]
+                self.refresh_token = data.get("refresh_token", self.refresh_token)
+                try:
+                    lifetime = int(data.get("expires_in", 900))
+                except (TypeError, ValueError) as exc:
+                    raise StrixApiError("Invalid token expiry") from exc
+                self.expires_at = time.monotonic() + max(30, lifetime - 60)
+                return
 
     async def vehicles(self):
-        """Return API vehicles keyed by stable Strix vehicle ID."""
+        """Return Strix vehicles keyed by their stable identifiers."""
         await self.authenticate()
-
         for attempt in range(2):
-            async with self.session.get(
-                BASE + "/things",
-                headers={"Authorization": "Bearer " + self.token},
-                timeout=REQUEST_TIMEOUT,
-            ) as response:
-                if response.status == 401 and attempt == 0:
-                    self.token = None
-                    await self.authenticate()
-                    continue
+            try:
+                async with self.session.get(
+                    BASE + "/things",
+                    headers={"Authorization": "Bearer " + self.token},
+                    timeout=REQUEST_TIMEOUT,
+                ) as response:
+                    if response.status == 401:
+                        if attempt == 0:
+                            self.token = None
+                            await self.authenticate()
+                            continue
+                        raise StrixAuthenticationError("Strix authorization rejected")
+                    if response.status >= 400:
+                        raise StrixApiError("Strix API HTTP %s" % response.status)
+                    data = await response.json(content_type=None)
+            except (aiohttp.ClientError, TimeoutError) as exc:
+                raise StrixConnectionError("Strix vehicles unavailable") from exc
+            except (ValueError, TypeError) as exc:
+                raise StrixApiError("Invalid Strix vehicles response") from exc
 
-                response.raise_for_status()
-                data = await response.json(content_type=None)
-                if not isinstance(data, list):
-                    raise RuntimeError("Unexpected Strix response")
-
-                return {
-                    vehicle["id"]: vehicle
-                    for vehicle in data
-                    if vehicle.get("type") == "mrn:things:vehicle"
-                    and vehicle.get("id")
-                }
-
-        raise RuntimeError("Strix authorization failed")
+            if not isinstance(data, list):
+                raise StrixApiError("Unexpected Strix vehicles response")
+            return {
+                vehicle["id"]: vehicle
+                for vehicle in data
+                if isinstance(vehicle, dict)
+                and vehicle.get("type") == "mrn:things:vehicle"
+                and vehicle.get("id")
+            }
+        raise StrixAuthenticationError("Strix authorization rejected")
