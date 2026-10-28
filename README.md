@@ -15,6 +15,7 @@ Unofficial custom integration for monitoring Strix Argentina GPS-tracked vehicle
 - [Authentication](#authentication)
 - [Upgrading an existing manual installation](#upgrading-an-existing-manual-installation)
 - [Privacy](#privacy)
+- [Diagnostics and troubleshooting](#diagnostics-and-troubleshooting)
 - [Development and validation](#development-and-validation)
 - [License and trademarks](#license-and-trademarks)
 
@@ -25,6 +26,8 @@ Unofficial custom integration for monitoring Strix Argentina GPS-tracked vehicle
 - Ignition, motion, towing and fuel-cutoff binary sensors
 - Automatic polling approximately every 120 seconds
 - Vehicle metadata from the Strix API
+- Automatic discovery of newly added vehicles during polling (no restart required)
+- Safe integration diagnostics and English/Spanish configuration translations
 
 **Limitations:** Strix GPS data may be delayed or unavailable. The meaning of the reported GPS distance has not been independently verified. This integration is not an emergency, safety or guaranteed real-time tracking system.
 
@@ -89,9 +92,15 @@ Always verify your installation before making changes. Existing dashboards depen
 
 Vehicle locations, license plates, device identifiers and credentials are sensitive. Limit access to your Home Assistant instance, dashboards, diagnostics and backups.
 
+## Diagnostics and troubleshooting
+
+From **Settings → Devices & services → Strix Argentina**, download integration diagnostics when investigating issues. Diagnostics include the vehicle count, last update status and polling interval. Account credentials are redacted; vehicle identifiers, location coordinates and raw API payloads are intentionally omitted. Do not assume every diagnostic or Home Assistant log is safe to publish without reviewing it.
+
+Transient API outages are reported as update failures. Rejected account credentials are treated as authentication failures and may trigger Home Assistant reauthentication handling. Newly added vehicles are registered after a successful poll; existing entity unique IDs are preserved. Vehicles removed from the account become unavailable rather than having their registry entries deleted.
+
 ## Development and validation
 
-This integration is currently at version `0.1.0`. The API is unofficial. Bug reports and contributions are welcome. Hassfest runs on every push and pull request; the HACS validation job runs only when the repository is public. These checks validate packaging and metadata; they do not guarantee that the external Strix API will remain compatible.
+This integration is currently at version `0.1.0`. The API is unofficial. Bug reports and contributions are welcome. Hassfest runs on every push and pull request; the HACS validation job runs only when the repository is public. The Python unit suite covers payload helpers, OAuth refresh and error handling, and dynamic vehicle discovery. Run locally with `python -m pip install aiohttp` and `python -m unittest discover -s tests`. These checks validate packaging and selected behavior; they do not guarantee that the external Strix API will remain compatible.
 
 ## License and trademarks
 
