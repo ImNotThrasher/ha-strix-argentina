@@ -1,5 +1,15 @@
 # Strix Argentina for Home Assistant
 
+[![Latest release](https://img.shields.io/github/v/release/ImNotThrasher/ha-strix-argentina?label=release)](https://github.com/ImNotThrasher/ha-strix-argentina/releases/latest)
+[![Validation](https://github.com/ImNotThrasher/ha-strix-argentina/actions/workflows/validate.yml/badge.svg?branch=main)](https://github.com/ImNotThrasher/ha-strix-argentina/actions/workflows/validate.yml)
+[![GitHub stars](https://img.shields.io/github/stars/ImNotThrasher/ha-strix-argentina?style=flat)](https://github.com/ImNotThrasher/ha-strix-argentina/stargazers)
+[![License: GPL-3.0](https://img.shields.io/github/license/ImNotThrasher/ha-strix-argentina)](LICENSE)
+
+[![Open repository in HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=ImNotThrasher&repository=ha-strix-argentina&category=integration)
+[![Add integration to Home Assistant](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=strix_argentina)
+
+> **Recommended:** Install through **HACS** for easier updates. Add this repository as a custom integration repository, download it, then use **Add Integration** to configure your Strix account. The repository must be public for other users to access it.
+
 Unofficial Home Assistant integration for Strix Argentina vehicle GPS tracking (the service formerly known as LoJack Argentina).
 
 > [!IMPORTANT]
@@ -51,23 +61,27 @@ The integration uses the **Strix Argentina** name because it connects to the Str
 
 ## Installation
 
-### Manual installation
+### Recommended: HACS (custom repository)
 
-1. Copy `custom_components/strix_argentina` from this repository into the `custom_components` folder in your Home Assistant configuration directory.
-2. Restart Home Assistant.
-3. Open **Settings → Devices & services → Add integration**.
-4. Search for **Strix Argentina** and complete the configuration form.
+[![Open repository in HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=ImNotThrasher&repository=ha-strix-argentina&category=integration)
 
-### HACS custom repository
+1. Install [HACS](https://www.hacs.xyz/) in Home Assistant if you do not already have it.
+2. Click the button above to open this repository in your Home Assistant instance. If prompted, add it as a **custom repository** of type **Integration**. Alternatively, open **HACS → three-dot menu → Custom repositories** and enter `https://github.com/ImNotThrasher/ha-strix-argentina` with type **Integration**.
+3. Download the integration from HACS and follow any restart prompt.
+4. Click **Add Integration** below and enter your Strix account credentials and required API client authorization value.
 
-**The repository must be public for normal HACS custom-repository installation.** Publishing the repository alone does not add it to the default HACS catalog. The HACS validation workflow is configured but skips execution while the repository remains private.
+[![Add integration to Home Assistant](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=strix_argentina)
 
-1. Open HACS and add `https://github.com/ImNotThrasher/ha-strix-argentina` as a **custom repository** of type **Integration**.
-2. Download the integration.
+**Note:** The repository is not currently listed in the default HACS catalog. A custom repository is sufficient; listing in the default catalog is a separate review process. While this repository remains private, these links are not usable for public installation.
+
+### Alternative: manual installation
+
+1. Download the [latest release](https://github.com/ImNotThrasher/ha-strix-argentina/releases/latest).
+2. Copy `custom_components/strix_argentina` into the `custom_components` folder in your Home Assistant configuration directory.
 3. Restart Home Assistant.
-4. Add **Strix Argentina** under **Settings → Devices & services**.
+4. Open **Settings → Devices & services → Add integration**, search for **Strix Argentina**, and complete the configuration form.
 
-HACS downloads the integration into your Home Assistant installation; it does not execute Python code remotely from GitHub.
+Manual installation works without HACS, but updates must be installed manually. **Do not install both ways independently or delete an existing configuration entry when switching methods.** See [upgrading an existing manual installation](#upgrading-an-existing-manual-installation).
 
 ## Authentication
 
