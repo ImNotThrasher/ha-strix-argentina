@@ -60,7 +60,7 @@ The integration uses the **Strix Argentina** name because it connects to the Str
 
 ### HACS custom repository
 
-**The repository must be public for normal HACS custom-repository installation.**
+**The repository must be public for normal HACS custom-repository installation.** Publishing the repository alone does not add it to the default HACS catalog. The HACS validation workflow is configured but skips execution while the repository remains private.
 
 1. Open HACS and add `https://github.com/ImNotThrasher/ha-strix-argentina` as a **custom repository** of type **Integration**.
 2. Download the integration.
@@ -120,7 +120,14 @@ Transient API outages are reported as update failures. Rejected account credenti
 
 ## Development and validation
 
-This integration is currently at version `0.2.0` (release candidate; validate against your Home Assistant instance before publishing a GitHub release). The API is unofficial. Bug reports and contributions are welcome. Hassfest runs on every push and pull request; the HACS validation job runs only when the repository is public. The Python unit suite covers payload helpers, GPS coordinate validation, OAuth refresh and error handling, and dynamic vehicle discovery. Ruff lint and Python compilation also run in CI. Run locally with `python -m pip install aiohttp` and `python -m unittest discover -s tests`. These checks validate packaging and selected behavior; they do not guarantee that the external Strix API will remain compatible.
+The latest published stable release is [`v0.2.0`](https://github.com/ImNotThrasher/ha-strix-argentina/releases/tag/v0.2.0). Multi-vehicle behavior was validated with simulated vehicles in an isolated Home Assistant test environment; it has not been tested with a real Strix account containing multiple vehicles. The API is unofficial. Bug reports and contributions are welcome. Hassfest runs on every push and pull request; the HACS validation job runs only when the repository is public. The Python unit suite covers payload helpers, GPS coordinate validation, OAuth refresh and error handling, and dynamic vehicle discovery. Ruff lint and Python compilation also run in CI. Run locally with `python -m pip install aiohttp` and `python -m unittest discover -s tests`. These checks validate packaging and selected behavior; they do not guarantee that the external Strix API will remain compatible.
+
+## Development branches and releases
+
+- **`dev`** is the development branch for changes and experiments. Open pull requests against `dev` during development.
+- **`main`** is reserved for validated stable code. Promote changes from `dev` to `main` only after review and successful CI checks.
+- Published GitHub releases and version tags are created from `main`; the release version should match `custom_components/strix_argentina/manifest.json`.
+- GitHub Actions runs unit tests, an isolated Home Assistant runtime test, Ruff, and Hassfest. The HACS validation job runs when the repository is public. A successful automated run does not guarantee compatibility with future Strix API changes.
 
 ## License and trademarks
 
