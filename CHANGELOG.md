@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.2 — HACS catalog readiness and screenshots
+
+- Declare Argentina (`AR`) as the integration's supported service country in HACS metadata; this does not geographically block installation.
+- Add real Home Assistant dashboard and vehicle entity screenshots to the README.
+- Remove the abandoned historical v0.1.0 release workflow and outdated private-repository note.
+- No runtime, API, authentication, vehicle entity or device-control changes.
+
 ## 0.2.1 — HACS packaging and documentation
 
 - Place integration icon assets under `custom_components/strix_argentina/brand/` so HACS brand validation succeeds.
