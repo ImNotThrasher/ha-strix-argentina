@@ -1,12 +1,11 @@
 """Offline OAuth and vehicle API tests with synthetic credentials only."""
 
-import asyncio
 import importlib.util
 from pathlib import Path
 import sys
 import types
 import unittest
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 
 ROOT = Path(__file__).resolve().parents[1] / "custom_components" / "strix_argentina"
 PACKAGE = "strix_argentina"
