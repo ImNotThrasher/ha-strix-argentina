@@ -2,6 +2,8 @@
 
 from datetime import datetime, timezone
 
+from homeassistant.util import dt as dt_util
+
 from homeassistant.components.binary_sensor import BinarySensorEntity
 from .entity import StrixEntity
 from .discovery import register_vehicle_discovery
@@ -54,10 +56,10 @@ class StrixBinary(StrixEntity, BinarySensorEntity):
     @property
     def is_on(self):
         if self.field == "api_connected":
-            return self.coordinator.last_update_success
+            return bool(self.coordinator.last_update_success)
         if self.field == "gps_stale":
             timestamp = gps_timestamp_ms(self.vehicle)
             if not isinstance(timestamp, (int, float)) or timestamp <= 0:
                 return None
-            return datetime.now(timezone.utc).timestamp() - timestamp / 1000 > 900
+            return dt_util.utcnow().timestamp() - timestamp / 1000 > 900
         return vehicle_state(self.vehicle).get(self.field)
