@@ -57,6 +57,14 @@ class VehicleHelpersTests(unittest.TestCase):
             {"state": {"location": {"coordinates": [-34.8, -58.4]}}}
         ), (-34.8, -58.4))
 
+    def test_invalid_gps_timestamps(self):
+        for value in (None, "", "not-a-number", float("nan"),
+                      float("inf"), -1, 0, True, 253402300800000):
+            vehicle = {"metadata": {"state": {"location": {"timestamp": value}}}}
+            self.assertIsNone(helpers.gps_timestamp_ms(vehicle))
+        vehicle = {"metadata": {"state": {"location": {"timestamp": "1234567890000"}}}}
+        self.assertEqual(helpers.gps_timestamp_ms(vehicle), 1234567890000)
+
     def test_device_info_keeps_identifiers(self):
         vehicle = {"info": {"label": "My car", "make": "Chevrolet"}}
         self.assertEqual(
