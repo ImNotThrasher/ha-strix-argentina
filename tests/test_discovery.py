@@ -43,6 +43,31 @@ class Entry:
 
 
 class DiscoveryTests(unittest.TestCase):
+    def test_second_vehicle_entity_lifecycle(self):
+        coordinator = Coordinator()
+        entry = Entry()
+        added = []
+        fields = ("location", "speed", "contact_on", "gps_stale", "api_connected")
+        discovery.register_vehicle_discovery(
+            None, entry, coordinator, added.extend,
+            lambda vid: [(vid, field) for field in fields],
+        )
+        self.assertEqual(len(added), len(fields))
+        self.assertTrue(all(vid == "vehicle-a" for vid, _ in added))
+        coordinator.refresh({"vehicle-a": {}, "vehicle-b": {}})
+        self.assertEqual(len(added), 2 * len(fields))
+        self.assertEqual(
+            {(vid, field) for vid, field in added if vid == "vehicle-b"},
+            {("vehicle-b", field) for field in fields},
+        )
+        coordinator.refresh({"vehicle-b": {}})
+        self.assertEqual(len(added), 2 * len(fields))
+        coordinator.refresh({"vehicle-a": {}, "vehicle-b": {}})
+        self.assertEqual(len(added), 2 * len(fields))
+        entry.cleanup[0]()
+        coordinator.refresh({"vehicle-a": {}, "vehicle-b": {}, "vehicle-c": {}})
+        self.assertEqual(len(added), 2 * len(fields))
+
     def test_adds_new_vehicles_only_once(self):
         coordinator = Coordinator()
         entry = Entry()
