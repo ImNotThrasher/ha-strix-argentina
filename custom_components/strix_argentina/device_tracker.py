@@ -1,12 +1,21 @@
-from homeassistant.components.device_tracker import TrackerEntity, SourceType
+"""GPS tracking entities for Strix vehicles."""
+
+from homeassistant.components.device_tracker import SourceType, TrackerEntity
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
+
 from .const import DOMAIN
+from .helpers import device_info, gps_coordinates, gps_timestamp_ms, vehicle_info
+
 
 async def async_setup_entry(hass, entry, async_add_entities):
-    c = hass.data[DOMAIN][entry.entry_id]
-    async_add_entities([StrixTracker(c, vid) for vid in c.data])
+    """Create one GPS tracker per vehicle in the initial API response."""
+    coordinator = hass.data[DOMAIN][entry.entry_id]
+    async_add_entities([StrixTracker(coordinator, vid) for vid in coordinator.data])
+
 
 class StrixTracker(CoordinatorEntity, TrackerEntity):
+    """Expose the last reported GPS position for a vehicle."""
+
     _attr_has_entity_name = True
     _attr_name = "Location"
     _attr_source_type = SourceType.GPS
@@ -17,27 +26,39 @@ class StrixTracker(CoordinatorEntity, TrackerEntity):
         self._attr_unique_id = vid + "_location"
 
     @property
+    def _vehicle(self):
+        return self.coordinator.data.get(self.vid) or {}
+
+    @property
     def device_info(self):
-        info = (self.coordinator.data.get(self.vid) or {}).get("info") or {}
-        return {"identifiers": {(DOMAIN, self.vid)}, "name": info.get("label") or "Strix vehicle", "manufacturer": info.get("make") or "Strix", "model": info.get("model") or "Vehicle", "serial_number": self.vid}
+        return device_info(self._vehicle, self.vid, detailed=True)
 
     @property
     def latitude(self):
-        coords = ((((self.coordinator.data.get(self.vid) or {}).get("state") or {}).get("location") or {}).get("coordinates") or [])
-        return float(coords[0]) if len(coords) >= 2 else None
+        coordinates = gps_coordinates(self._vehicle)
+        return float(coordinates[0]) if len(coordinates) >= 2 else None
 
     @property
     def longitude(self):
-        coords = ((((self.coordinator.data.get(self.vid) or {}).get("state") or {}).get("location") or {}).get("coordinates") or [])
-        return float(coords[1]) if len(coords) >= 2 else None
+        coordinates = gps_coordinates(self._vehicle)
+        return float(coordinates[1]) if len(coordinates) >= 2 else None
 
     @property
     def available(self):
-        return super().available and self.vid in self.coordinator.data and self.latitude is not None
+        return (
+            super().available
+            and self.vid in self.coordinator.data
+            and self.latitude is not None
+        )
 
     @property
     def extra_state_attributes(self):
-        v = self.coordinator.data.get(self.vid) or {}
-        info = v.get("info") or {}
-        attrs = {"last_gps_timestamp_ms": (((v.get("metadata") or {}).get("state") or {}).get("location") or {}).get("timestamp"), "vehicle_year": info.get("year"), "vehicle_color": info.get("color"), "vehicle_plate": info.get("domain"), "vehicle_type": info.get("subtype")}
-        return {key: value for key, value in attrs.items() if value is not None}
+        info = vehicle_info(self._vehicle)
+        attributes = {
+            "last_gps_timestamp_ms": gps_timestamp_ms(self._vehicle),
+            "vehicle_year": info.get("year"),
+            "vehicle_color": info.get("color"),
+            "vehicle_plate": info.get("domain"),
+            "vehicle_type": info.get("subtype"),
+        }
+        return {key: value for key, value in attributes.items() if value is not None}
