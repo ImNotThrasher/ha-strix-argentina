@@ -22,6 +22,7 @@ FIELDS = {
     "mileage_correction": ("Mileage correction", None),
     "last_gps_update": ("Last GPS update", None),
     "gps_age": ("GPS data age", "min"),
+    "api_last_success": ("Last successful API poll", None),
 }
 
 
@@ -43,7 +44,7 @@ class StrixSensor(StrixEntity, SensorEntity):
         self._attr_unique_id = vid + "_" + field
         self._attr_name, self._attr_native_unit_of_measurement = FIELDS[field]
 
-        if field == "last_gps_update":
+        if field in ("last_gps_update", "api_last_success"):
             self._attr_device_class = SensorDeviceClass.TIMESTAMP
         elif field in ("mileage", "read_odometer"):
             self._attr_device_class = SensorDeviceClass.DISTANCE
@@ -66,6 +67,8 @@ class StrixSensor(StrixEntity, SensorEntity):
 
     @property
     def native_value(self):
+        if self.field == "api_last_success":
+            return self.coordinator.last_strix_success()
         if self.field in ("last_gps_update", "gps_age"):
             timestamp = gps_timestamp_ms(self._vehicle)
             if not isinstance(timestamp, (int, float)) or timestamp <= 0:
