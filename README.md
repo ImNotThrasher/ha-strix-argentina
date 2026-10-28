@@ -82,4 +82,4 @@ This integration is currently at version `0.1.0`. The API is unofficial. Bug rep
 
 ## License and trademarks
 
-No open-source license has been selected for the source code yet. Until one is added, ordinary copyright restrictions apply. The Strix name and logo belong to their respective owners; the project's trademark disclaimer does not constitute a license to use third-party assets.
+The source code is licensed under the **GNU General Public License v3.0 (GPL-3.0)**. See [LICENSE](LICENSE). The Strix name and logo belong to their respective owners; the project's trademark disclaimer does not constitute a license to use third-party assets.
