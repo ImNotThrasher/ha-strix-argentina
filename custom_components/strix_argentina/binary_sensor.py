@@ -1,7 +1,8 @@
 """Binary status sensors for Strix vehicles."""
 
 from homeassistant.components.binary_sensor import BinarySensorEntity
-from homeassistant.helpers.update_coordinator import CoordinatorEntity
+from .entity import StrixEntity
+from .discovery import register_vehicle_discovery
 
 from .const import DOMAIN
 from .helpers import device_info, vehicle_state
@@ -18,30 +19,24 @@ FIELDS = {
 async def async_setup_entry(hass, entry, async_add_entities):
     """Create binary sensors for vehicles present during initial setup."""
     coordinator = hass.data[DOMAIN][entry.entry_id]
-    async_add_entities(
-        [
-            StrixBinary(coordinator, vid, field)
-            for vid in coordinator.data
-            for field in FIELDS
-        ]
-    )
+    register_vehicle_discovery(hass, entry, coordinator, async_add_entities,
+        lambda vid: [StrixBinary(coordinator, vid, field) for field in FIELDS])
 
 
-class StrixBinary(CoordinatorEntity, BinarySensorEntity):
+class StrixBinary(StrixEntity, BinarySensorEntity):
     """Expose one boolean state reported by Strix."""
 
     _attr_has_entity_name = True
 
     def __init__(self, coordinator, vid, field):
-        super().__init__(coordinator)
-        self.vid = vid
+        super().__init__(coordinator, vid)
         self.field = field
         self._attr_unique_id = vid + "_" + field
         self._attr_name = FIELDS[field]
 
     @property
     def device_info(self):
-        vehicle = self.coordinator.data.get(self.vid) or {}
+        vehicle = self.vehicle
         return device_info(vehicle, self.vid)
 
     @property
