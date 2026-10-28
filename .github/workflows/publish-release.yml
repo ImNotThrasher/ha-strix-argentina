@@ -1,12 +1,11 @@
 name: Publish release
 
 on:
-  workflow_dispatch:
-    inputs:
-      version:
-        description: "Release version (must match manifest.json, e.g. 0.2.1)"
-        required: true
-        type: string
+  push:
+    branches: [main]
+    paths:
+      - custom_components/strix_argentina/manifest.json
+      - .github/workflows/publish-release.yml
 
 permissions:
   contents: write
@@ -19,7 +18,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Verify version and existing release
         env:
-          VERSION: ${{ inputs.version }}
+          VERSION: 0.2.1
           GH_TOKEN: ${{ github.token }}
         run: |
           python - <<'PY'
@@ -36,7 +35,7 @@ jobs:
           fi
       - name: Publish new version from main
         env:
-          VERSION: ${{ inputs.version }}
+          VERSION: 0.2.1
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
         run: |
