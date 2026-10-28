@@ -5,6 +5,19 @@ Unofficial custom integration for monitoring Strix Argentina GPS-tracked vehicle
 > [!IMPORTANT]
 > This is an independent community project. It is **not affiliated with, endorsed by, or supported by Strix Argentina**. Strix and its associated names and logos are trademarks of their respective owners. References to those marks are for identification only; no trademark rights or official affiliation are claimed.
 
+## Table of contents
+
+- [Features](#features)
+- [Requirements](#requirements)
+- [Installation](#installation)
+  - [Manual installation](#manual-installation)
+  - [HACS custom repository](#hacs-custom-repository)
+- [Authentication](#authentication)
+- [Upgrading an existing manual installation](#upgrading-an-existing-manual-installation)
+- [Privacy](#privacy)
+- [Development and validation](#development-and-validation)
+- [License and trademarks](#license-and-trademarks)
+
 ## Features
 
 - Vehicle GPS location via a `device_tracker` entity
@@ -78,7 +91,7 @@ Vehicle locations, license plates, device identifiers and credentials are sensit
 
 ## Development and validation
 
-This integration is currently at version `0.1.0`. The API is unofficial. Bug reports and contributions are welcome. Automated HACS and Hassfest checks validate packaging and metadata; they do not guarantee that the external Strix API will remain compatible.
+This integration is currently at version `0.1.0`. The API is unofficial. Bug reports and contributions are welcome. Hassfest runs on every push and pull request; the HACS validation job runs only when the repository is public. These checks validate packaging and metadata; they do not guarantee that the external Strix API will remain compatible.
 
 ## License and trademarks
 
