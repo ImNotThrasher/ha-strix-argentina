@@ -1,0 +1,24 @@
+name: Publish v0.2.0
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/publish-v0.2.0.yml
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create release from validated main commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          gh release create v0.2.0 \
+            --target "${GITHUB_SHA}" \
+            --title "v0.2.0" \
+            --notes "Strix Argentina integration for Home Assistant. Includes multi-vehicle discovery, GPS validation, authentication handling, binary sensors, and automated unit and isolated Home Assistant runtime tests. The multi-vehicle behavior has been tested with simulated vehicles; it has not been tested against a real multi-vehicle Strix account."
