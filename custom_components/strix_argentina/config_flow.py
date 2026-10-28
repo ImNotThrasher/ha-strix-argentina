@@ -82,6 +82,9 @@ class StrixConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 errors["base"] = "invalid_auth"
             except (StrixConnectionError, StrixApiError):
                 errors["base"] = "cannot_connect"
+            except Exception:
+                _LOGGER.exception("Unexpected Strix reauthentication error")
+                errors["base"] = "cannot_connect"
             else:
                 return self.async_update_reload_and_abort(
                     self._reauth_entry, data_updates=data
