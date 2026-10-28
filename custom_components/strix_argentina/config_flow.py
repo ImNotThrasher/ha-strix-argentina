@@ -1,7 +1,6 @@
 """Configuration flow for Strix Argentina accounts."""
 
 import logging
-import re
 import uuid
 
 import voluptuous as vol
@@ -49,14 +48,7 @@ class StrixConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 await client.vehicles()
             except Exception as exc:
                 # Do not log credentials, tokens, response bodies or URLs.
-                match = (
-                    re.search(r"HTTP (\\d{3})", str(exc))
-                    if isinstance(exc, RuntimeError)
-                    else None
-                )
-                status = getattr(exc, "status", None) or (
-                    match.group(1) if match else "unknown"
-                )
+                status = getattr(exc, "status", "unknown")
                 _LOGGER.warning(
                     "Strix setup failed: error_type=%s status=%s",
                     type(exc).__name__,
