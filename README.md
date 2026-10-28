@@ -1,5 +1,15 @@
 # Strix Argentina for Home Assistant
 
+[![Latest release](https://img.shields.io/github/v/release/ImNotThrasher/ha-strix-argentina?label=release)](https://github.com/ImNotThrasher/ha-strix-argentina/releases/latest)
+[![Validation](https://github.com/ImNotThrasher/ha-strix-argentina/actions/workflows/validate.yml/badge.svg?branch=main)](https://github.com/ImNotThrasher/ha-strix-argentina/actions/workflows/validate.yml)
+[![GitHub stars](https://img.shields.io/github/stars/ImNotThrasher/ha-strix-argentina?style=flat)](https://github.com/ImNotThrasher/ha-strix-argentina/stargazers)
+[![License: GPL-3.0](https://img.shields.io/github/license/ImNotThrasher/ha-strix-argentina)](LICENSE)
+
+[![Open repository in HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=ImNotThrasher&repository=ha-strix-argentina&category=integration)
+[![Add integration to Home Assistant](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=strix_argentina)
+
+> **Recommended:** Install through **HACS** for easier updates. Add this repository as a custom integration repository, download it, then use **Add Integration** to configure your Strix account. The repository must be public for other users to access it.
+
 Unofficial Home Assistant integration for Strix Argentina vehicle GPS tracking (the service formerly known as LoJack Argentina).
 
 > [!IMPORTANT]
@@ -51,23 +61,27 @@ The integration uses the **Strix Argentina** name because it connects to the Str
 
 ## Installation
 
-### Manual installation
+### Recommended: HACS (custom repository)
 
-1. Copy `custom_components/strix_argentina` from this repository into the `custom_components` folder in your Home Assistant configuration directory.
-2. Restart Home Assistant.
-3. Open **Settings → Devices & services → Add integration**.
-4. Search for **Strix Argentina** and complete the configuration form.
+[![Open repository in HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=ImNotThrasher&repository=ha-strix-argentina&category=integration)
 
-### HACS custom repository
+1. Install [HACS](https://www.hacs.xyz/) in Home Assistant if you do not already have it.
+2. Click the button above to open this repository in your Home Assistant instance. If prompted, add it as a **custom repository** of type **Integration**. Alternatively, open **HACS → three-dot menu → Custom repositories** and enter `https://github.com/ImNotThrasher/ha-strix-argentina` with type **Integration**.
+3. Download the integration from HACS and follow any restart prompt.
+4. Click **Add Integration** below and enter your Strix account credentials and required API client authorization value.
 
-**The repository must be public for normal HACS custom-repository installation.**
+[![Add integration to Home Assistant](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=strix_argentina)
 
-1. Open HACS and add `https://github.com/ImNotThrasher/ha-strix-argentina` as a **custom repository** of type **Integration**.
-2. Download the integration.
+**Note:** The repository is not currently listed in the default HACS catalog. A custom repository is sufficient; listing in the default catalog is a separate review process. While this repository remains private, these links are not usable for public installation.
+
+### Alternative: manual installation
+
+1. Download the [latest release](https://github.com/ImNotThrasher/ha-strix-argentina/releases/latest).
+2. Copy `custom_components/strix_argentina` into the `custom_components` folder in your Home Assistant configuration directory.
 3. Restart Home Assistant.
-4. Add **Strix Argentina** under **Settings → Devices & services**.
+4. Open **Settings → Devices & services → Add integration**, search for **Strix Argentina**, and complete the configuration form.
 
-HACS downloads the integration into your Home Assistant installation; it does not execute Python code remotely from GitHub.
+Manual installation works without HACS, but updates must be installed manually. **Do not install both ways independently or delete an existing configuration entry when switching methods.** See [upgrading an existing manual installation](#upgrading-an-existing-manual-installation).
 
 ## Authentication
 
@@ -120,7 +134,14 @@ Transient API outages are reported as update failures. Rejected account credenti
 
 ## Development and validation
 
-This integration is currently at version `0.2.0` (release candidate; validate against your Home Assistant instance before publishing a GitHub release). The API is unofficial. Bug reports and contributions are welcome. Hassfest runs on every push and pull request; the HACS validation job runs only when the repository is public. The Python unit suite covers payload helpers, GPS coordinate validation, OAuth refresh and error handling, and dynamic vehicle discovery. Ruff lint and Python compilation also run in CI. Run locally with `python -m pip install aiohttp` and `python -m unittest discover -s tests`. These checks validate packaging and selected behavior; they do not guarantee that the external Strix API will remain compatible.
+For the current stable version, see the [latest release](https://github.com/ImNotThrasher/ha-strix-argentina/releases/latest); previous versions are listed under [all releases](https://github.com/ImNotThrasher/ha-strix-argentina/releases). Multi-vehicle behavior was validated with simulated vehicles in an isolated Home Assistant test environment; it has not been tested with a real Strix account containing multiple vehicles. The API is unofficial. Bug reports and contributions are welcome. Hassfest runs on every push and pull request; the HACS validation job runs only when the repository is public. The Python unit suite covers payload helpers, GPS coordinate validation, OAuth refresh and error handling, and dynamic vehicle discovery. Ruff lint and Python compilation also run in CI. Run locally with `python -m pip install aiohttp` and `python -m unittest discover -s tests`. These checks validate packaging and selected behavior; they do not guarantee that the external Strix API will remain compatible.
+
+## Development branches and releases
+
+- **`dev`** is the development branch for changes and experiments. Open pull requests against `dev` during development.
+- **`main`** is reserved for validated stable code. Promote changes from `dev` to `main` only after review and successful CI checks.
+- Published GitHub releases and version tags are created from `main`; the release version should match `custom_components/strix_argentina/manifest.json`.
+- GitHub Actions runs unit tests, an isolated Home Assistant runtime test, Ruff, and Hassfest. The HACS validation job runs when the repository is public. A successful automated run does not guarantee compatibility with future Strix API changes.
 
 ## License and trademarks
 
