@@ -33,8 +33,8 @@ async def async_setup_entry(hass, entry):
 
     async def update():
         """Fetch vehicles, reporting authentication failures separately."""
+        nonlocal last_successful_poll
         try:
-            nonlocal last_successful_poll
             vehicles = await client.vehicles()
             last_successful_poll = datetime.now(timezone.utc)
             return vehicles
