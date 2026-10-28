@@ -25,4 +25,5 @@ jobs:
           gh release create v0.1.0 \
             --target efbff1652c \
             --title "v0.1.0 (historical snapshot)" \
+            --latest=false \
             --notes "Historical snapshot of Strix Argentina from the original 0.1.0 development stage (commit efbff1652c). The integration manifest at this commit declares version 0.1.0. GitHub CI recorded passing unit tests and Hassfest validation for this snapshot; HACS validation was skipped at that time. This release was published retrospectively for version-history completeness. For installation, use the latest release instead. Multi-vehicle behavior was not validated against a real multi-vehicle Strix account."
