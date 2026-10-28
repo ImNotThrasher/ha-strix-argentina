@@ -48,3 +48,21 @@ def device_info(vehicle, vehicle_id, *, detailed=False):
             serial_number=vehicle_id,
         )
     return data
+
+
+def valid_gps_coordinates(vehicle):
+    """Validate latitude and longitude while preserving existing ordering."""
+    import math
+
+    coordinates = gps_coordinates(vehicle)
+    if not isinstance(coordinates, (list, tuple)) or len(coordinates) < 2:
+        return None
+    try:
+        lat, lon = float(coordinates[0]), float(coordinates[1])
+    except (TypeError, ValueError, OverflowError):
+        return None
+    if not math.isfinite(lat) or not math.isfinite(lon):
+        return None
+    if not (-90 <= lat <= 90 and -180 <= lon <= 180):
+        return None
+    return lat, lon
