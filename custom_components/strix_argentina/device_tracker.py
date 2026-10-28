@@ -1,7 +1,8 @@
 """GPS tracking entities for Strix vehicles."""
 
 from homeassistant.components.device_tracker import SourceType, TrackerEntity
-from homeassistant.helpers.update_coordinator import CoordinatorEntity
+from .entity import StrixEntity
+from .discovery import register_vehicle_discovery
 
 from .const import DOMAIN
 from .helpers import device_info, gps_coordinates, gps_timestamp_ms, vehicle_info
@@ -10,10 +11,11 @@ from .helpers import device_info, gps_coordinates, gps_timestamp_ms, vehicle_inf
 async def async_setup_entry(hass, entry, async_add_entities):
     """Create one GPS tracker per vehicle in the initial API response."""
     coordinator = hass.data[DOMAIN][entry.entry_id]
-    async_add_entities([StrixTracker(coordinator, vid) for vid in coordinator.data])
+    register_vehicle_discovery(hass, entry, coordinator, async_add_entities,
+                               lambda vid: [StrixTracker(coordinator, vid)])
 
 
-class StrixTracker(CoordinatorEntity, TrackerEntity):
+class StrixTracker(StrixEntity, TrackerEntity):
     """Expose the last reported GPS position for a vehicle."""
 
     _attr_has_entity_name = True
@@ -21,13 +23,12 @@ class StrixTracker(CoordinatorEntity, TrackerEntity):
     _attr_source_type = SourceType.GPS
 
     def __init__(self, coordinator, vid):
-        super().__init__(coordinator)
-        self.vid = vid
+        super().__init__(coordinator, vid)
         self._attr_unique_id = vid + "_location"
 
     @property
     def _vehicle(self):
-        return self.coordinator.data.get(self.vid) or {}
+        return self.vehicle
 
     @property
     def device_info(self):
