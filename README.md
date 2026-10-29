@@ -31,6 +31,7 @@ Unofficial Home Assistant integration for Strix Argentina vehicle GPS tracking (
 - [Privacy](#privacy)
 - [Diagnostics and troubleshooting](#diagnostics-and-troubleshooting)
 - [Development and validation](#development-and-validation)
+- [Postman API collection](#postman-api-collection)
 - [License and trademarks](#license-and-trademarks)
 
 ## Strix and LoJack
@@ -153,6 +154,14 @@ Transient API outages are reported as update failures. Rejected account credenti
 ## Development and validation
 
 For the current stable version, see the [latest release](https://github.com/ImNotThrasher/ha-strix-argentina/releases/latest); previous versions are listed under [all releases](https://github.com/ImNotThrasher/ha-strix-argentina/releases). Multi-vehicle behavior was validated with simulated vehicles in an isolated Home Assistant test environment; it has not been tested with a real Strix account containing multiple vehicles. The API is unofficial. Bug reports and contributions are welcome. Hassfest runs on every push and pull request; the HACS validation job runs only when the repository is public. The Python unit suite covers payload helpers, GPS coordinate validation, OAuth refresh and error handling, and dynamic vehicle discovery. Ruff lint and Python compilation also run in CI. Run locally with `python -m pip install aiohttp` and `python -m unittest discover -s tests`. These checks validate packaging and selected behavior; they do not guarantee that the external Strix API will remain compatible.
+
+## Postman API collection
+
+A [read-only Postman collection](docs/postman/strix-argentina.postman_collection.json) is available for developers who want to inspect the unofficial Strix API without running Home Assistant. Import the JSON file into Postman and set the collection variables `username`, `password`, and `oauth_basic` locally. The `oauth_basic` value is the encoded OAuth client credential **without** the `Basic ` prefix; it is not your Strix account password.
+
+Run **01 - Authenticate (password)** to obtain and store the access and refresh tokens in collection variables. **02 - Refresh token** renews the access token, and **03 - List vehicles** fetches vehicle data. Both OAuth requests were manually tested successfully without `client_device_id`; the request body field is disabled by default and can be enabled if needed. The Home Assistant integration may still send a generated client device ID.
+
+The collection contains no credentials, tokens, real vehicle identifiers, or saved responses. **Before sharing an exported or modified copy, clear all sensitive collection variable values and inspect saved examples/responses.** Postman's `secret` variable type does not guarantee that values are excluded from exports. This is an unofficial API and its behavior may change without notice.
 
 ## Development branches and releases
 
