@@ -1,46 +1,90 @@
 name: Publish release
 
 on:
-  push:
+  workflow_run:
+    workflows: ["Validate integration"]
+    types: [completed]
     branches: [main]
-    paths:
-      - custom_components/strix_argentina/manifest.json
-      - .github/workflows/publish-release.yml
 
 permissions:
   contents: write
 
+concurrency:
+  group: publish-release
+  cancel-in-progress: false
+
 jobs:
   release:
-    if: github.ref == 'refs/heads/main'
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'main' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Verify version and existing release
+      - name: Verify validated commit is current main
         env:
           GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          VALIDATED_SHA: ${{ github.event.workflow_run.head_sha }}
         run: |
-          python - <<'PY'
-          import json, os, re
-          version = json.load(open("custom_components/strix_argentina/manifest.json"))["version"]
-          with open(os.environ["GITHUB_ENV"], "a") as env:
-              env.write(f"VERSION={version}\n")
-          assert re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+", version), "Expected semantic version x.y.z"
-          with open("custom_components/strix_argentina/manifest.json") as f:
-              manifest = json.load(f)
-          assert manifest["version"] == version
-          PY
-          VERSION=$(python -c 'import json; print(json.load(open("custom_components/strix_argentina/manifest.json"))["version"])')
-          if gh release view "v${VERSION}" >/dev/null 2>&1; then
-            echo "Release already exists; refusing to overwrite"
-            exit 1
+          MAIN_SHA="$(gh api "repos/${GH_REPO}/git/ref/heads/main" --jq '.object.sha')"
+          if [ "$MAIN_SHA" != "$VALIDATED_SHA" ]; then
+            echo "Validated commit is no longer the tip of main; skipping stale release."
+            exit 0
           fi
-      - name: Publish new version from main
+          echo "CURRENT_MAIN=true" >> "$GITHUB_ENV"
+      - uses: actions/checkout@v5
+        if: env.CURRENT_MAIN == 'true'
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          persist-credentials: false
+      - name: Check version against published releases
+        if: env.CURRENT_MAIN == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
         run: |
-          gh release create "v${VERSION}" \
-            --target "${GITHUB_SHA}" \
-            --title "v${VERSION}" \
-            --notes-file CHANGELOG.md
+          python - <<'PY'
+          import json
+          import os
+          import re
+          import subprocess
+
+          manifest_path = next(iter(__import__("pathlib").Path("custom_components").glob("*/manifest.json")))
+          version = json.loads(manifest_path.read_text(encoding="utf-8"))["version"]
+          if not re.fullmatch(r"\d+\.\d+\.\d+", version):
+              raise SystemExit("Manifest version must be x.y.z")
+          response = subprocess.check_output(
+              ["gh", "release", "list", "--limit", "100", "--json", "tagName"],
+              text=True,
+          )
+          releases = json.loads(response)
+          versions = [
+              tuple(map(int, match.groups()))
+              for item in releases
+              if (match := re.fullmatch(r"v(\d+)\.(\d+)\.(\d+)", item["tagName"]))
+          ]
+          current = tuple(map(int, version.split(".")))
+          latest = max(versions, default=None)
+          if latest is not None and current <= latest:
+              print(f"Version {version} is not newer than latest release {latest}; skipping.")
+              return_code = "false"
+          else:
+              return_code = "true"
+          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as output:
+              output.write(f"PUBLISH={return_code}\nVERSION={version}\n")
+          PY
+      - name: Publish release
+        if: env.PUBLISH == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          VALIDATED_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          MAIN_SHA="$(gh api "repos/${GH_REPO}/git/ref/heads/main" --jq '.object.sha')"
+          if [ "$MAIN_SHA" != "$VALIDATED_SHA" ]; then
+            echo "Main advanced after validation; refusing to release stale commit."
+            exit 0
+          fi
+          if gh release view "v${VERSION}" >/dev/null 2>&1; then
+            echo "Release v${VERSION} already exists; skipping."
+            exit 0
+          fi
+          gh release create "v${VERSION}" --target "$VALIDATED_SHA" --title "v${VERSION}" --generate-notes
