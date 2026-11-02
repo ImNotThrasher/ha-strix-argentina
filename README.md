@@ -4,6 +4,7 @@
 [![Validation](https://github.com/ImNotThrasher/ha-strix-argentina/actions/workflows/validate.yml/badge.svg?branch=main)](https://github.com/ImNotThrasher/ha-strix-argentina/actions/workflows/validate.yml)
 [![GitHub stars](https://img.shields.io/github/stars/ImNotThrasher/ha-strix-argentina?style=flat)](https://github.com/ImNotThrasher/ha-strix-argentina/stargazers)
 [![GitHub issues](https://img.shields.io/github/issues/ImNotThrasher/ha-strix-argentina)](https://github.com/ImNotThrasher/ha-strix-argentina/issues)
+[![HACS custom repository](https://img.shields.io/badge/HACS-custom%20repository-41BDF5)](https://www.hacs.xyz/)
 [![GitHub downloads](https://img.shields.io/github/downloads/ImNotThrasher/ha-strix-argentina/total)](https://github.com/ImNotThrasher/ha-strix-argentina/releases)
 [![License: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-blue)](LICENSE)
 
